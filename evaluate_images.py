@@ -180,8 +180,6 @@ if __name__ == "__main__":
         shuffle=False,
     )
 
-    print(loader)
-
     # Torch
     device = args["device"]
 
@@ -366,7 +364,7 @@ if __name__ == "__main__":
     # exit()
 
     for i, batch in enumerate(loader):
-        print(i, batch)
+        print("enumerate" + str(len(loader)))
         """
         Per batch output:
             self.target_points[index], self.target_ids[index], self.target_labels[index], self.target_semantics[index], \
@@ -391,6 +389,7 @@ if __name__ == "__main__":
                 found = True
 
         if not found:
+            print("not found continue")
             continue
 
         source_label_shape = torch.zeros(target_shapes.shape[0])
