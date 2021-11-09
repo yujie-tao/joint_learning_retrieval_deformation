@@ -197,7 +197,7 @@ if __name__ == "__main__":
 			    int(source_model)), "view-" + str(int(view[0])).zfill(2), "shape-rgb.png")
             print(img_filename)
 
-			try:
+            try:
 				with Image.open(img_filename) as fimg:
 				    out = np.array(fimg, dtype=np.float32) / 255.0
 			except:
