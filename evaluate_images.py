@@ -166,6 +166,8 @@ if __name__ == "__main__":
         OBJ_CAT + "_" + str(NUM_SOURCES) + "_" + DATA_SPLIT + "_image.h5",
     )
 
+    print(filename)
+
     dataset = StructureNetDataset_h5_images(
         filename, IMAGE_BASE_DIR, is_train=False
     )
@@ -177,6 +179,8 @@ if __name__ == "__main__":
         pin_memory=True,
         shuffle=False,
     )
+
+    print(loader)
 
     # Torch
     device = args["device"]
@@ -250,7 +254,6 @@ if __name__ == "__main__":
                 "view-" + str(int(view[0])).zfill(2),
                 "shape-rgb.png",
             )
-            print(img_filename)
 
             try:
                 with Image.open(img_filename) as fimg:
