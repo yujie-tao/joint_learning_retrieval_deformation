@@ -388,9 +388,9 @@ if __name__ == "__main__":
             if 18248 == int(tid) or 18345 == int(tid):
                 found = True
 
-        # if not found:
-        #     print("not found continue")
-        #     continue
+        if not found:
+            print("not found continue")
+            continue
 
         source_label_shape = torch.zeros(target_shapes.shape[0])
 
