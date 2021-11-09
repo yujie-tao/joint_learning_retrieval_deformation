@@ -166,6 +166,15 @@ if __name__ == "__main__":
         OBJ_CAT + "_" + str(NUM_SOURCES) + "_" + DATA_SPLIT + "_image.h5",
     )
 
+    print(
+        "generated_datasplits/"
+        + OBJ_CAT
+        + "_"
+        + str(NUM_SOURCES)
+        + "_"
+        + DATA_SPLIT
+        + "_image.h5"
+    )
     print(filename)
 
     dataset = StructureNetDataset_h5_images(
