@@ -142,7 +142,7 @@ def get_all_selected_models_pickle(pickle_file, all_models=False):
 
 
 def load_h5(h5_filename):
-    f = h5py.File(h5_filename)
+    f = h5py.File(h5_filename, "r")
     data = f["data"][:]
     label = f["label"][:]
     semantic = f["semantic"][:]
