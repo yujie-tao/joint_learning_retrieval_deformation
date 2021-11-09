@@ -370,16 +370,17 @@ if __name__ == "__main__":
             self.target_points[index], self.target_ids[index], self.target_labels[index], self.target_semantics[index], \
             self.corres_source_label[index]
         """
-        # target_shapes, target_ids, target_labels, _, source_labels_gt = batch
+        target_shapes, target_ids, target_labels, _, source_labels_gt = batch
+
         # print("a")
-        (
-            target_images,
-            target_shapes,
-            target_ids,
-            target_labels,
-            _,
-            random_view,
-        ) = batch
+        # (
+        #     target_images,
+        #     target_shapes,
+        #     target_ids,
+        #     target_labels,
+        #     _,
+        #     random_view,
+        # ) = batch
 
         tids = target_ids.to("cpu").detach().numpy()
         found = False
