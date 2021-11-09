@@ -304,32 +304,44 @@ if __name__ == "__main__":
 
     np.random.seed(0)
     fname = os.path.join(LOG_DIR, "model.pth")
-    target_encoder.load_state_dict(torch.load(fname)["target_encoder"])
+    target_encoder.load_state_dict(
+        torch.load(fname, map_location=torch.device("cpu"))["target_encoder"]
+    )
     target_encoder.to(device)
     target_encoder.eval()
 
-    param_decoder.load_state_dict(torch.load(fname)["param_decoder"])
+    param_decoder.load_state_dict(
+        torch.load(fname, map_location=torch.device("cpu"))["param_decoder"]
+    )
     param_decoder.to(device)
     param_decoder.eval()
 
-    SOURCE_LATENT_CODES = torch.load(fname)["source_latent_codes"]
-    SOURCE_PART_LATENT_CODES = torch.load(fname)["part_latent_codes"]
+    SOURCE_LATENT_CODES = torch.load(fname, map_location=torch.device("cpu"))[
+        "source_latent_codes"
+    ]
+    SOURCE_PART_LATENT_CODES = torch.load(
+        fname, map_location=torch.device("cpu")
+    )["part_latent_codes"]
 
     if JOINT_MODEL:
         if not SHARED_ENCODER:
             retrieval_encoder.load_state_dict(
-                torch.load(fname)["retrieval_encoder"]
+                torch.load(fname, map_location=torch.device("cpu"))[
+                    "retrieval_encoder"
+                ]
             )
             retrieval_encoder.to(device)
             retrieval_encoder.eval()
 
         if DIST_FUNC == "mahalanobis":
-            SOURCE_VARIANCES = torch.load(fname)["source_variances"]
+            SOURCE_VARIANCES = torch.load(
+                fname, map_location=torch.device("cpu")
+            )["source_variances"]
 
         if not SHARE_SRC_LATENT:
-            RETRIEVAL_SOURCE_LATENT_CODES = torch.load(fname)[
-                "retrieval_source_latent_codes"
-            ]
+            RETRIEVAL_SOURCE_LATENT_CODES = torch.load(
+                fname, map_location=torch.device("cpu")
+            )["retrieval_source_latent_codes"]
     ########
 
     num_evaluated = 0
