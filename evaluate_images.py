@@ -122,7 +122,7 @@ print("Num sources: " + str(NUM_SOURCES))
 MESH_VISU = FLAGS.mesh_visu
 
 IMAGE_BASE_DIR = (
-    "/orion/downloads/partnet_dataset/partnet_rgb_masks_" + OBJ_CAT + "/"
+    "orion/downloads/partnet_dataset/partnet_rgb_masks_" + OBJ_CAT + "/"
 )
 set_img_basedir(OBJ_CAT)
 
