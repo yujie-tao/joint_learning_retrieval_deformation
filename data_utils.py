@@ -458,37 +458,37 @@ def output_visualization_mesh(
     render_mesh(out_mesh_file, out_face_ids_file, output_mesh_snapshot_file)
 
     # Output to a single image
-    height = 1080
-    width = 1920
-    new_im = Image.new("RGBA", (width * 3, height))
-    im1 = Image.open(src_mesh_snapshot_file + ".png")
-    im2 = Image.open(target_points_snapshot_file + ".png")
-    im3 = Image.open(output_mesh_snapshot_file + ".png")
-    images = [im1, im2, im3]
-    x_offset = 0
-    for im in images:
-        new_im.paste(im, (x_offset, 0))
-        x_offset += width
+    # height = 1080
+    # width = 1920
+    # new_im = Image.new("RGBA", (width * 3, height))
+    # im1 = Image.open(src_mesh_snapshot_file + ".png")
+    # im2 = Image.open(target_points_snapshot_file + ".png")
+    # im3 = Image.open(output_mesh_snapshot_file + ".png")
+    # images = [im1, im2, im3]
+    # x_offset = 0
+    # for im in images:
+    #     new_im.paste(im, (x_offset, 0))
+    #     x_offset += width
 
-    if chamfer_cost == None:
-        output_image_filename = os.path.join(
-            output_fol, str(src_id) + "_" + str(target_id) + "_deform.png"
-        )
-    else:
-        output_image_filename = os.path.join(
-            output_fol,
-            str(src_id)
-            + "_"
-            + str(target_id)
-            + "_"
-            + method
-            + "_"
-            + str(float(chamfer_cost))
-            + ".png",
-        )
+    # if chamfer_cost == None:
+    #     output_image_filename = os.path.join(
+    #         output_fol, str(src_id) + "_" + str(target_id) + "_deform.png"
+    #     )
+    # else:
+    #     output_image_filename = os.path.join(
+    #         output_fol,
+    #         str(src_id)
+    #         + "_"
+    #         + str(target_id)
+    #         + "_"
+    #         + method
+    #         + "_"
+    #         + str(float(chamfer_cost))
+    #         + ".png",
+    #     )
 
-    new_im.save(output_image_filename)
-    print("Saved '{}'.".format(output_image_filename))
+    # new_im.save(output_image_filename)
+    # print("Saved '{}'.".format(output_image_filename))
 
 
 def output_visualization_mesh_images(

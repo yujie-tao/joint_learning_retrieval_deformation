@@ -848,17 +848,17 @@ if __name__ == "__main__":
                 else:
                     curr_src_vertices = src_vertices[j]
 
-                # output_visualization_mesh(
-                #     output_vertices,
-                #     curr_src_vertices,
-                #     src_faces[j],
-                #     target_shapes[j],
-                #     src_face_labels[j],
-                #     target_labels[j],
-                #     src_ids[j],
-                #     target_ids[j],
-                #     mesh_fol,
-                # )
+                output_visualization_mesh(
+                    output_vertices,
+                    curr_src_vertices,
+                    src_faces[j],
+                    target_shapes[j],
+                    src_face_labels[j],
+                    target_labels[j],
+                    src_ids[j],
+                    target_ids[j],
+                    mesh_fol,
+                )
 
         if i % 20 == 0:
             print(
