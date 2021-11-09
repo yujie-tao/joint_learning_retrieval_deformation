@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 BASE_DIR = os.path.normpath(
                 os.path.join(os.path.dirname(os.path.abspath(__file__))))
 import argparse
@@ -13,7 +14,7 @@ import torch.nn as nn
 from pytorch3d.loss import chamfer_distance
 
 from dataset import *
-from model import * 
+from model import *
 from losses import *
 
 import math
@@ -21,29 +22,32 @@ import matplotlib.pyplot as plt
 import time
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--config", default="config_full_chairs.json", help="path to the json config file", type=str)
+parser.add_argument("--config", default="config_full_chairs.json",
+                    help="path to the json config file", type=str)
 
-parser.add_argument("--logdir", default="log_table_keypoint_images_AJ3_srcenc_symm/", help="path to the log directory", type=str)
-parser.add_argument('--dump_dir', default= "fixed2_dump_table_keypoint_images_AJ3_srcenc_symm/", type=str)
-parser.add_argument('--category', default= "table", type=str)
+parser.add_argument("--logdir", default="log_table_keypoint_images_AJ3_srcenc_symm/",
+                    help="path to the log directory", type=str)
+parser.add_argument(
+    '--dump_dir', default="fixed2_dump_table_keypoint_images_AJ3_srcenc_symm/", type=str)
+parser.add_argument('--category', default="table", type=str)
 
 parser.add_argument("--data_split", default="test", type=str)
-parser.add_argument('--use_bn', default= False, type=bool)
+parser.add_argument('--use_bn', default=False, type=bool)
 
-parser.add_argument('--share_src_latent', default= False, type=bool)
-parser.add_argument('--shared_encoder', default= False, type=bool)
-parser.add_argument('--distance_function', default= "mahalanobis", type=str)
-parser.add_argument('--activation_fn', default= "sigmoid", type=str)
-parser.add_argument('--normalize', default= False, type=bool)
-parser.add_argument('--joint_model', default= True, type=bool)
-parser.add_argument('--use_connectivity', default= True, type=bool)
-parser.add_argument('--num_sources', default= 500, type=int)
+parser.add_argument('--share_src_latent', default=False, type=bool)
+parser.add_argument('--shared_encoder', default=False, type=bool)
+parser.add_argument('--distance_function', default="mahalanobis", type=str)
+parser.add_argument('--activation_fn', default="sigmoid", type=str)
+parser.add_argument('--normalize', default=False, type=bool)
+parser.add_argument('--joint_model', default=True, type=bool)
+parser.add_argument('--use_connectivity', default=True, type=bool)
+parser.add_argument('--num_sources', default=500, type=int)
 
-parser.add_argument('--use_src_encoder_retrieval', default= True, type=bool)
-parser.add_argument('--use_singleaxis', default= False, type=bool)
-parser.add_argument('--use_keypoint', default= True, type=bool)
+parser.add_argument('--use_src_encoder_retrieval', default=True, type=bool)
+parser.add_argument('--use_singleaxis', default=False, type=bool)
+parser.add_argument('--use_keypoint', default=True, type=bool)
 
-parser.add_argument('--mesh_visu', default= True, type=bool)
+parser.add_argument('--mesh_visu', default=True, type=bool)
 
 
 FLAGS = parser.parse_args()
@@ -64,14 +68,14 @@ if not os.path.exists(DUMP_DIR): os.mkdir(DUMP_DIR)
 temp_fol = os.path.join(DUMP_DIR, "tmp")
 if not os.path.exists(temp_fol): os.mkdir(temp_fol)
 
-##For mesh visu
+# For mesh visu
 mesh_fol = os.path.join(DUMP_DIR, "mesh")
 if not os.path.exists(mesh_fol): os.mkdir(mesh_fol)
 temp_fol = os.path.join(mesh_fol, "tmp")
 if not os.path.exists(temp_fol): os.mkdir(temp_fol)
 
 LOG_FOUT = open(os.path.join(DUMP_DIR, 'log_evaluate_rankings.txt'), 'w')
-LOG_FOUT.write(str(FLAGS)+'\n')
+LOG_FOUT.write(str(FLAGS) + '\n')
 
 ALPHA = args["alpha"]
 USE_BN = FLAGS.use_bn
@@ -96,16 +100,16 @@ USE_SINGLEAXIS = FLAGS.use_singleaxis
 USE_KEYPOINT = FLAGS.use_keypoint
 
 NUM_SOURCES = FLAGS.num_sources
-print("Num sources: "+str(NUM_SOURCES))
+print("Num sources: " + str(NUM_SOURCES))
 
 MESH_VISU = FLAGS.mesh_visu
 
-IMAGE_BASE_DIR = "/orion/downloads/partnet_dataset/partnet_rgb_masks_"+OBJ_CAT+"/"
+IMAGE_BASE_DIR = "/orion/downloads/partnet_dataset/partnet_rgb_masks_" + OBJ_CAT + "/"
 set_img_basedir(OBJ_CAT)
 
 
 def log_string(out_str):
-    LOG_FOUT.write(out_str+'\n')
+    LOG_FOUT.write(out_str + '\n')
     LOG_FOUT.flush()
     print(out_str)
 
@@ -115,23 +119,28 @@ if __name__ == "__main__":
 
 	if USE_SINGLEAXIS:
 		print("Using single axis constraint")
-		src_data_fol = os.path.join(BASE_DIR, "data_aabb_constraints_singleaxis", OBJ_CAT, "h5")
+		src_data_fol = os.path.join(
+		    BASE_DIR, "data_aabb_constraints_singleaxis", OBJ_CAT, "h5")
 	elif USE_KEYPOINT:
 		print("Using keypoint constraint")
-		src_data_fol = os.path.join(BASE_DIR, "data_aabb_constraints_keypoint", OBJ_CAT, "h5")
+		src_data_fol = os.path.join(
+		    BASE_DIR, "data_aabb_constraints_keypoint", OBJ_CAT, "h5")
 	else:
 		src_data_fol = os.path.join(BASE_DIR, "data_aabb_constraints", OBJ_CAT, "h5")
 
-	filename_pickle = os.path.join("generated_datasplits", OBJ_CAT+"_"+str(NUM_SOURCES)+".pickle")
+	filename_pickle = os.path.join(
+	    "generated_datasplits", OBJ_CAT + "_" + str(NUM_SOURCES) + ".pickle")
 	sources, _, _ = get_all_selected_models_pickle(filename_pickle)
 
-	DATA_SPLIT = "test"	
+	DATA_SPLIT = "test"
 	batch_size = 1
 
-	#### Get data for all target models
-	filename = os.path.join("generated_datasplits", OBJ_CAT+"_"+str(NUM_SOURCES)+"_"+DATA_SPLIT+"_image.h5")
+	# Get data for all target models
+	filename = os.path.join("generated_datasplits", OBJ_CAT +
+	                        "_" + str(NUM_SOURCES) + "_" + DATA_SPLIT + "_image.h5")
 
-	dataset = StructureNetDataset_h5_images(filename, IMAGE_BASE_DIR, is_train=False)	
+	dataset = StructureNetDataset_h5_images(
+	    filename, IMAGE_BASE_DIR, is_train=False)
 
 	loader = torch.utils.data.DataLoader(
 	    dataset,
@@ -141,13 +150,13 @@ if __name__ == "__main__":
 	    shuffle=False,
 	)
 
-	#### Torch
+	# Torch
 	device = args["device"]
 
 	print("Loading sources...")
 
-	##Get the data of the sources
-	## Get max number of params for the embedding size
+	# Get the data of the sources
+	# Get max number of params for the embedding size
 	MAX_NUM_PARAMS = -1
 	MAX_NUM_PARTS = -1
 	SOURCE_MODEL_INFO = []
@@ -157,10 +166,12 @@ if __name__ == "__main__":
 		if (USE_CONNECTIVITY):
 			box_params, orig_ids, default_param, points, point_labels, points_mat, \
 								vertices, vertices_mat, faces, face_labels, \
-								constraint_mat,	constraint_proj_mat	= get_model(os.path.join(src_data_fol, src_filename), mesh=True, constraint=True)
+								constraint_mat,	constraint_proj_mat = get_model(os.path.join(
+								    src_data_fol, src_filename), mesh=True, constraint=True)
 		else:
 			box_params, orig_ids, default_param, points, point_labels, points_mat, \
-						 vertices, vertices_mat, faces, face_labels, = get_model(os.path.join(src_data_fol, src_filename), mesh=True)
+						 vertices, vertices_mat, faces, face_labels, = get_model(
+						     os.path.join(src_data_fol, src_filename), mesh=True)
 
 		curr_source_dict = {}
 		curr_source_dict["default_param"] = default_param
@@ -175,14 +186,16 @@ if __name__ == "__main__":
 
 		if (USE_CONNECTIVITY):
 			curr_source_dict["constraint_mat"] = constraint_mat
-			curr_source_dict["constraint_proj_mat"] = constraint_proj_mat	
+			curr_source_dict["constraint_proj_mat"] = constraint_proj_mat
 
 		img_size = 224
-		## Cache a fixed view image
+		# Cache a fixed view image
 		if (USE_SRC_ENCODER_RETRIEVAL):
 			view = np.array([17])
 
-			img_filename = os.path.join(IMAGE_BASE_DIR, str(int(source_model)), "view-"+str(int(view[0])).zfill(2), "shape-rgb.png")
+			img_filename = os.path.join(IMAGE_BASE_DIR, str(
+			    int(source_model)), "view-" + str(int(view[0])).zfill(2), "shape-rgb.png")
+            print(img_filename)
 
 			try:
 				with Image.open(img_filename) as fimg:
@@ -216,7 +229,7 @@ if __name__ == "__main__":
 	print(MAX_NUM_PARTS)
 	embedding_size = 6
 
-	#### Load model
+	# Load model
 	target_encoder = ImageEncoder(
 	    TARGET_LATENT_DIM,
 	    is_fixed=1,
@@ -227,7 +240,7 @@ if __name__ == "__main__":
 	param_decoder = ParamDecoder2(decoder_input_dim, 256, embedding_size)
 	param_decoder.to(device, dtype=torch.float)
 
-	## For Retrieval
+	# For Retrieval
 	retrieval_encoder = ImageEncoder(
 	    TARGET_LATENT_DIM,
 	    is_fixed=1,
@@ -307,7 +320,7 @@ if __name__ == "__main__":
 		im = torch.stack(im)
 
 
-		##Target Encoder
+		# Target Encoder
 		target_latent_codes = target_encoder(im)
 
 		# print(target_latent_codes.shape)
@@ -315,26 +328,26 @@ if __name__ == "__main__":
 		target_latent_codes = target_latent_codes.unsqueeze(0).repeat(len(SOURCE_MODEL_INFO),1,1)
 		source_labels = source_label_shape.unsqueeze(0).repeat(len(SOURCE_MODEL_INFO),1)
 
-		## Reshape to (K*batch_size, ...) to feed into the network
-		## Source assignments have to be done accordingly
+		# Reshape to (K*batch_size, ...) to feed into the network
+		# Source assignments have to be done accordingly
 		target_latent_codes = target_latent_codes.view(-1, target_latent_codes.shape[-1])
 		source_labels = source_labels.view(-1)
 
-		#Get all labels
+		# Get all labels
 		source_labels = get_all_source_labels(source_labels, len(SOURCE_MODEL_INFO))
 
 
-		##Also overwrite x for chamfer distance					
+		# Also overwrite x for chamfer distance					
 		x_repeated = x.unsqueeze(0).repeat(len(SOURCE_MODEL_INFO),1,1,1)
 		x_repeated = x_repeated.view(-1, x_repeated.shape[-2], x_repeated.shape[-1])
 
 		# print("a.1")
-		###Set up source A matrices and default params based on source_labels of the target
+		# Set up source A matrices and default params based on source_labels of the target
 		# src_mats, src_default_params = get_source_info(source_labels, SOURCE_MODEL_INFO, MAX_NUM_PARAMS)
 		src_mats, src_default_params, src_connectivity_mat = get_source_info(source_labels, SOURCE_MODEL_INFO, MAX_NUM_PARAMS, use_connectivity= USE_CONNECTIVITY)
 		# print("a.2")
 
-		###Set up source latent codes based on source_labels of the target
+		# Set up source latent codes based on source_labels of the target
 		src_latent_codes = get_source_latent_codes_fixed(source_labels, SOURCE_LATENT_CODES, device)
 
 		mat = [mat.to(device, dtype=torch.float) for mat in src_mats]
@@ -343,7 +356,7 @@ if __name__ == "__main__":
 		mat = torch.stack(mat)
 		def_param = torch.stack(def_param)
 
-		## If using connectivity
+		# If using connectivity
 		if (USE_CONNECTIVITY):
 			conn_mat = [conn_mat.to(device, dtype=torch.float) for conn_mat in src_connectivity_mat]
 			conn_mat = torch.stack(conn_mat)
@@ -352,7 +365,7 @@ if __name__ == "__main__":
 
 		# print(concat_latent_code.shape)
 
-		##Param Decoder per part
+		# Param Decoder per part
 		# Make the part latent codes of each source into a (K x PART_LATENT_DIM) tensor
 		all_params = []
 		for j in range(concat_latent_code.shape[0]):
@@ -366,7 +379,7 @@ if __name__ == "__main__":
 
 			params = param_decoder(full_latent_code, use_bn=USE_BN)
 
-			## Pad with extra zero rows to cater to max number of parameters
+			# Pad with extra zero rows to cater to max number of parameters
 			if (curr_num_parts < MAX_NUM_PARTS):
 				dummy_params = torch.zeros((MAX_NUM_PARTS-curr_num_parts, embedding_size), dtype=torch.float, device=device)
 				params = torch.cat((params, dummy_params), dim=0)
@@ -389,7 +402,7 @@ if __name__ == "__main__":
 		# print("b")
 
 		if JOINT_MODEL:
-			## Retrieval
+			# Retrieval
 			if not SHARED_ENCODER:
 				retrieval_latent_codes = retrieval_encoder(im)
 				retrieval_latent_codes = retrieval_latent_codes.unsqueeze(0).repeat(len(SOURCE_MODEL_INFO),1,1)
@@ -405,7 +418,7 @@ if __name__ == "__main__":
 			
 			if USE_SRC_ENCODER_RETRIEVAL:
 				with torch.no_grad():
-					## Split to two batches for memory
+					# Split to two batches for memory
 					src_latent_codes = []
 					num_sets = 20
 					interval = int(len(source_labels)/num_sets)
@@ -464,7 +477,7 @@ if __name__ == "__main__":
 			# 	sorted_indices.append(torch.randperm(len(SOURCE_MODEL_INFO)).to(device))
 			# sorted_indices = torch.stack(sorted_indices).T
 
-			#ground truth sorted
+			# ground truth sorted
 			sorted_indices = sorted_by_cd
 			retrieved_idx = sorted_indices[0, :]
 
@@ -479,7 +492,7 @@ if __name__ == "__main__":
 		params_retrieved = params_retrieved.to("cpu")
 		params_retrieved = params_retrieved.detach().numpy()[0]
 
-		####For mesh visualization
+		# For mesh visualization
 		src_vertices_mats, src_default_params, src_conn_mat = get_source_info_mesh(retrieved_idx, SOURCE_MODEL_INFO, MAX_NUM_PARAMS, use_connectivity=USE_CONNECTIVITY)
 		########################
 
@@ -530,11 +543,11 @@ if __name__ == "__main__":
 			curr_candidates = sorted_indices[:,j]
 			candidates.append(curr_candidates)
 
-			## For graph 1
+			# For graph 1
 			per_rank_total_cd_error += cd_loss_sorted[j]
 			per_rank_total_cd_error_retrieved += cd_loss_retrieved[j]
 
-			##For graph 2 
+			# For graph 2 
 			cd_threshold_x_axis_tiled = np.tile(np.expand_dims(cd_threshold_x_axis, -1), (1, cd_loss_sorted[j].shape[0]))
 
 			count_greater = np.greater(cd_threshold_x_axis_tiled, cd_loss_sorted[j])
@@ -542,7 +555,7 @@ if __name__ == "__main__":
 			num_sources_above_threshold += count_greater
 
 			if (j<2 and MESH_VISU):
-				## For mesh rendering
+				# For mesh rendering
 				curr_param = np.expand_dims(params_retrieved[j], -1)
 				curr_mat = src_vertices_mats[j].detach().numpy()
 				
@@ -561,7 +574,7 @@ if __name__ == "__main__":
 		if (i%20==0):
 			print("Time elapsed: "+str(time.time()-start_time)+" sec for batch "+str(i)+ "/"+ str(len(loader))+".")
 
-	### Save numerical results
+	# Save numerical results
 	mean_cd_loss = total_cd_error/float(num_evaluated)
 	log_string("Num evaluated= "+str(num_evaluated))
 	log_string("")
@@ -573,7 +586,7 @@ if __name__ == "__main__":
 		accuracy = float(num_correct_retrieved)/num_evaluated
 		log_string("Retrieval accuracy= "+str(accuracy))
 
-	##Graph 1 rank vs mean cd_error
+	# Graph 1 rank vs mean cd_error
 	print(per_rank_total_cd_error.shape)
 	per_rank_total_cd_error = per_rank_total_cd_error/num_evaluated
 	per_rank_total_cd_error_retrieved = per_rank_total_cd_error_retrieved/num_evaluated
@@ -605,20 +618,20 @@ if __name__ == "__main__":
 
 	log_string(" ")
 	log_string("Ranking Retrieved Mean CD error:")
-	### Output to text file
+	# Output to text file
 	for i in range(5):
 		log_string("\tRank "+str(i+1)+": "+str(per_rank_total_cd_error_retrieved[i]))
 
 	log_string(" ")
 
 	log_string("Ranking Oracle Mean CD error:")
-	### Output to text file
+	# Output to text file
 	for i in range(5):
 		log_string("\tRank "+str(i+1)+": "+str(per_rank_total_cd_error[i]))
 
 	log_string(" ")
 
-	##Graph 2 cd_error threshold vs number of sources
+	# Graph 2 cd_error threshold vs number of sources
 	print(num_sources_above_threshold.shape)
 	num_sources_above_threshold = num_sources_above_threshold/num_evaluated
 
