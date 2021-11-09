@@ -366,6 +366,7 @@ if __name__ == "__main__":
     # exit()
 
     for i, batch in enumerate(loader):
+        print(i, batch)
         """
         Per batch output:
             self.target_points[index], self.target_ids[index], self.target_labels[index], self.target_semantics[index], \
